@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "LogAnalyzerApp": {
+      "commandName": "Project",
+      "nativeDebugging": true
+    }
+  }
+}
