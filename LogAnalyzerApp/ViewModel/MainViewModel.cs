@@ -71,7 +71,12 @@ namespace LogAnalyzerApp.ViewModel
                 OnPropertyChanged(nameof(StatusMessage));
             }
         }
-        public PlotModel PieModel { get; set; }
+        public PlotModel PieModel { get; set; } = new PlotModel
+        {
+            Title = "Log Distribution",
+            TitleColor = OxyColors.Black,
+            TitleFontSize = 18
+        };
 
         private void CreatePieChart()
         {
@@ -187,7 +192,9 @@ namespace LogAnalyzerApp.ViewModel
             PieModel = new PlotModel
             {
                 Title = "Log Distribution",
-                TextColor = OxyColors.White
+                TextColor = OxyColors.Black,
+                TitleFontSize = 18
+
             };
 
             OnPropertyChanged(nameof(PieModel));
