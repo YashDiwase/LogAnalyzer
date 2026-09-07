@@ -1,12 +1,13 @@
-#include "LogParser.h"
+#include "TextLogParser.h"
 #include <fstream>
 #include <sstream>
 
 #include <thread>
 #include <mutex>
 #include <future>
+#include <iterator>
 
-bool LogParser::LoadFile(const std::string& path)
+bool TextLogParser::LoadFile(const std::string& path)
 {
     Reset();
     std::ifstream file(path);
@@ -38,37 +39,45 @@ bool LogParser::LoadFile(const std::string& path)
         if (start >= lines.size())
             break;
 
-        futures.push_back(std::async(std::launch::async,
-            [this, &lines, start, end, &mergeMutex]()
-            {
-                std::unordered_map<LogLevel, int> localLevelCounts;
-                std::unordered_map<std::string, int> localErrorModuleCounts;
-
-                for (size_t i = start; i < end; ++i)
+        futures.push_back(
+            std::async(
+                std::launch::async,
+                [this,
+                &lines,
+                start,
+                end,
+                &mergeMutex]()
                 {
-                    LogEntry entry;
+                    std::vector<LogEntry> localLogs;
 
-                    if (!ParseLine(lines[i], entry))
+                    size_t localMalformedCount = 0;
+
+                    for (size_t i = start; i < end; ++i)
                     {
-                        malformedLineCount++;
-                        continue;
+                        LogEntry entry;
+
+                        if (!ParseLine(lines[i], entry))
+                        {
+                            localMalformedCount++;
+                            continue;
+                        }
+
+                        localLogs.push_back(
+                            std::move(entry));
                     }
 
-                    localLevelCounts[entry.level]++;
+                    std::lock_guard<std::mutex> lock(mergeMutex);
 
-                    if (entry.level == LogLevel::Error)
-                        localErrorModuleCounts[entry.module]++;
-                }
+                    logs.insert(
+                        logs.end(),
+                        std::make_move_iterator(
+                            localLogs.begin()),
+                        std::make_move_iterator(
+                            localLogs.end()));
 
-                // Merge results safely
-                std::lock_guard<std::mutex> lock(mergeMutex);
-
-                for (auto& entry1 : localLevelCounts)
-                    levelCounts[entry1.first] += entry1.second;
-
-                for (auto& entry2 : localErrorModuleCounts)
-                    errorModuleCounts[entry2.first] += entry2.second;
-            }));
+                    malformedLineCount +=
+                        localMalformedCount;
+                }));
     }
 
     for (auto& f : futures)
@@ -78,7 +87,7 @@ bool LogParser::LoadFile(const std::string& path)
 }
 
 
-bool LogParser::ParseLine(const std::string& line, LogEntry& entry)
+bool TextLogParser::ParseLine(const std::string& line, LogEntry& entry)
 {
     size_t pos1 = line.find(' ');
     if (pos1 == std::string::npos) return false;
@@ -111,7 +120,7 @@ bool LogParser::ParseLine(const std::string& line, LogEntry& entry)
 
 
 
-LogLevel LogParser::ParseLogLevel(const std::string& levelStr)
+LogLevel TextLogParser::ParseLogLevel(const std::string& levelStr)
 {
     if (levelStr == "INFO")  return LogLevel::Info;
     if (levelStr == "WARN")  return LogLevel::Warn;
@@ -121,24 +130,17 @@ LogLevel LogParser::ParseLogLevel(const std::string& levelStr)
 }
 
 
-const std::unordered_map<LogLevel, int>&
-LogParser::GetLevelCounts() const
-{
-    return levelCounts;
-}
-
-const std::unordered_map<std::string, int>&
-LogParser::GetErrorModuleCounts() const
-{
-    return errorModuleCounts;
-}
-size_t LogParser::GetMalformedLineCount() const
+size_t TextLogParser::GetMalformedLineCount() const
 {
     return malformedLineCount;
 }
-void LogParser::Reset()
+void TextLogParser::Reset()
 {
-    levelCounts.clear();
-    errorModuleCounts.clear();
+    logs.clear();
     malformedLineCount = 0;
+}
+const std::vector<LogEntry>&
+TextLogParser::GetLogs() const
+{
+    return logs;
 }

@@ -1,0 +1,26 @@
+[
+    {
+        "timestamp": "2025-01-20 10:15:32,123",
+        "level": "INFO",
+        "module": "OrderService",
+        "message": "Order created"
+    },
+    {
+        "timestamp": "2025-01-20 10:15:33,210",
+        "level": "DEBUG",
+        "module": "PaymentService",
+        "message": "Payment processing started"
+    },
+    {
+        "timestamp": "2025-01-20 10:15:34,500",
+        "level": "TRACE",
+        "module": "AuthService",
+        "message": "Entering authentication"
+    },
+    {
+        "timestamp": "2025-01-20 10:15:35,900",
+        "level": "ERROR",
+        "module": "DatabaseService",
+        "message": "Connection failed"
+    }
+]

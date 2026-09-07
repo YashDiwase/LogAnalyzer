@@ -3,13 +3,8 @@ using LogAnalyzerApp.Model;
 using LogAnalyzerBridge;
 using OxyPlot;
 using OxyPlot.Series;
-using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
 namespace LogAnalyzerApp.ViewModel
@@ -95,9 +90,12 @@ namespace LogAnalyzerApp.ViewModel
                 TextColor = OxyColors.White
             };
 
-            pie.Slices.Add(new PieSlice("Info", InfoCount) { Fill = OxyColors.Teal });
-            pie.Slices.Add(new PieSlice("Warn", WarnCount) { Fill = OxyColors.Gold });
-            pie.Slices.Add(new PieSlice("Error", ErrorCount) { Fill = OxyColors.Red });
+            if(InfoCount>0)
+                pie.Slices.Add(new PieSlice("Info", InfoCount) { Fill = OxyColors.Teal });
+            if(WarnCount>0)
+                pie.Slices.Add(new PieSlice("Warn", WarnCount) { Fill = OxyColors.Gold });
+            if(ErrorCount>0)
+                pie.Slices.Add(new PieSlice("Error", ErrorCount) { Fill = OxyColors.Red });
 
             model.Series.Add(pie);
 
@@ -125,6 +123,7 @@ namespace LogAnalyzerApp.ViewModel
                                 "Error",
                                 MessageBoxButton.OK,
                                 MessageBoxImage.Error);
+                StatusMessage = "Invalid File";
                 return;
             }
 
@@ -133,7 +132,7 @@ namespace LogAnalyzerApp.ViewModel
             if (malformed > 0)
             {
                 MessageBox.Show(
-                    $"File contains {malformed} malformed lines.\nPlease verify log format.",
+                    $"File contains {malformed} malformed entries.\nPlease verify log format.",
                     "Invalid Format",
                     MessageBoxButton.OK,
                     MessageBoxImage.Warning);

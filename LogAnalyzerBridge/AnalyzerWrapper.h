@@ -8,7 +8,8 @@ namespace LogAnalyzerBridge
     public ref class AnalyzerWrapper
     {
     private:
-        void* nativeParser;
+        void* parser;
+        void* analyzer;
 
     public:
         AnalyzerWrapper();

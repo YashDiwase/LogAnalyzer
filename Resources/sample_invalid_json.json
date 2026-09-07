@@ -1,0 +1,14 @@
+[
+    {
+        "timestamp": "2025-01-20 10:15:32,123",
+        "level": "ERROR",
+        "module": "OrderService",
+        "message": "Order failed"
+    },
+    {
+        "timestamp": "2025-01-20 10:15:33,210",
+        "level": "INFO"
+        "module": "PaymentService",
+        "message": "Payment successful"
+    }
+]

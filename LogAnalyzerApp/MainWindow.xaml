@@ -158,7 +158,7 @@
             </Grid.ColumnDefinitions>
 
             <!-- PIE CHART -->
-            <Border Background="#2B2B40" CornerRadius="10" Margin="0,0,10,0" Padding="10">
+            <Border Background="#2B2B40" CornerRadius="10" Margin="10,10,10,10" Padding="10">
                 <oxy:PlotView Model="{Binding PieModel}" />
             </Border>
 
@@ -173,7 +173,8 @@
               GridLinesVisibility="None"
               BorderThickness="0"
               IsReadOnly="True"
-              CanUserAddRows="False">
+              CanUserAddRows="False"
+              Margin="10 10 10 10">
 
                 <DataGrid.Columns>
 
@@ -190,10 +191,11 @@
         </Grid>
 
         <StatusBar Grid.Row="4"
-           Background="White"
-           Height="30">
+           Background="Gray"
+           Height="30"
+           Width="500" >
 
-            <StatusBarItem>
+            <StatusBarItem HorizontalAlignment="Center">
                 <TextBlock Text="{Binding StatusMessage}"
                    FontSize="13"/>
             </StatusBarItem>
